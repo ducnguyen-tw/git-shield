@@ -18,7 +18,7 @@ else
   echo "✅ No global pre-commit hook found."
 fi
 
-# === 2. Optionally unset the templateDir ===
+# === 2. Unset init.templateDir ===
 read -p "Do you want to remove the Git global templateDir setting? (y/N): " confirm
 if [[ "$confirm" =~ ^[Yy]$ ]]; then
   git config --global --unset init.templateDir
@@ -27,7 +27,6 @@ fi
 
 # === 3. Check if state file exists ===
 STATE_FILE="$HOME/.git-shield/installed_repos.txt"
-
 if [ ! -f "$STATE_FILE" ]; then
   echo "ℹ️ No state file found at $STATE_FILE. Skipping per-repo cleanup."
   echo "✅ Uninstallation complete."
@@ -51,7 +50,7 @@ while read repo; do
   fi
 done < "$STATE_FILE"
 
-# === 6. Clean up state file ===
+# === 6. Remove state file ===
 rm "$STATE_FILE"
 echo "🧼 Removed state file at $STATE_FILE"
 
