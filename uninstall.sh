@@ -23,25 +23,16 @@ fi
 # === 2. Unset init.templateDir ===
 git config --global --unset init.templateDir && echo "⚙️ Git global templateDir unset."
 
-# === 3. Check if state file exists ===
-STATE_FILE="$HOME/.git-shield/installed_repos.txt"
-if [ ! -f "$STATE_FILE" ]; then
-  echo "ℹ️ No state file found at $STATE_FILE. Skipping per-repo cleanup."
-  echo "✅ Uninstallation complete."
-  exit 0
+# === 3. Remove pre-commit from current repo if marker exists ===
+REPO_DIR=$(git rev-parse --show-toplevel 2>/dev/null || true)
+if [ -n "$REPO_DIR" ] && [ -f "$REPO_DIR/.git/hooks/pre-commit" ]; then
+  if grep -q "git-shield" "$REPO_DIR/.git/hooks/pre-commit"; then
+    rm "$REPO_DIR/.git/hooks/pre-commit"
+    echo "🗑️ Removed pre-commit hook from current repo: $REPO_DIR"
+  else
+    echo "⚠️ Current repo has a pre-commit hook, but not installed by git-shield."
+  fi
 fi
 
-# === 4. Automatically remove from all tracked repos ===
-while read repo; do
-  if [ -f "$repo/.git/hooks/pre-commit" ] && grep -q "git-shield" "$repo/.git/hooks/pre-commit"; then
-    rm "$repo/.git/hooks/pre-commit"
-    echo "🗑️ Removed pre-commit from: $repo"
-  else
-    echo "⚠️ Skipped (not a git-shield hook): $repo"
-  fi
-done < "$STATE_FILE"
-
-rm "$STATE_FILE"
-echo "🧼 Removed state file at $STATE_FILE"
 
 echo "✅ git-shield fully uninstalled from system and all tracked repos."
