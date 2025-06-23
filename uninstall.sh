@@ -28,6 +28,9 @@ case "$confirm" in
     git config --global --unset init.templateDir
     echo "⚙️ Git global templateDir unset."
     ;;
+  *)
+    echo "⚠️ Skipped unset of templateDir."
+    ;;
 esac
 
 # === 3. Check if state file exists ===
